@@ -35,6 +35,7 @@ services:
             FPM_HOST: "fpm:9000"
         volumes:
             - "./public:/var/www/html/public"
+            - "./storage/app:/var/www/html/storage/app" # For images and uploads.
         networks:
             - laravel-k8s
 
