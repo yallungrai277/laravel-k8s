@@ -1,3 +1,8 @@
+########################################################################################################
+################################################## Composer ############################################
+########################################################################################################
+
+
 # You can see a list of required extensions for Laravel here: https://laravel.com/docs/8.x/deployment#server-requirements
 ARG PHP_EXTS="bcmath ctype fileinfo mbstring pdo pdo_mysql dom pcntl"
 ARG PHP_PECL_EXTS="redis"
