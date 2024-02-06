@@ -1,0 +1,125 @@
+version: "3"
+services:
+    # Cli not needed really, but it has composer binary over on to run composer commands.
+    cli:
+        build:
+            context: .
+            target: cli
+        image: laravel-k8s/cli
+        entrypoint: ["tail", "-f", "/dev/null"] # Keeps the interactive shell alive.
+        volumes:
+            - ".:/var/www/html"
+        networks:
+            - laravel-k8s
+    fpm:
+        build:
+            context: .
+            target: fpm_server
+        image: laravel-k8s/fpm_server
+        environment:
+            APP_DEBUG: "true"
+        volumes:
+            - ".:/var/www/html"
+        networks:
+            - laravel-k8s
+
+    web:
+        build:
+            context: .
+            target: web_server
+        image: laravel-k8s/web_server
+        ports:
+            - "80:80"
+        environment:
+            # This gets mapped into the /docker/nginx/nginx.conf.template at runtime.
+            FPM_HOST: "fpm:9000"
+        volumes:
+            - "./public:/var/www/html/public"
+        networks:
+            - laravel-k8s
+
+    cron:
+        build:
+            context: .
+            target: cron
+        image: laravel-k8s/cron
+        volumes:
+            - ".:/var/www/html"
+        networks:
+            - laravel-k8s
+
+    frontend:
+        build:
+            context: .
+            target: frontend
+        command: ["/bin/sh", "-c", "npm install && npm run dev"]
+        image: laravel-k8s/frontend
+        ports:
+            - 5173:5173
+        volumes:
+            - ".:/var/www/html"
+            # Add node_modules as singular volume.
+            # This prevents our local node_modules from being propagated into the container,
+            # So the node_modules can be compiled for each of the different architectures (Local, Image)
+            - "/var/www/html/node_modules"
+        networks:
+            - laravel-k8s
+
+    redis:
+        image: redis:6.0.20-alpine
+        ports:
+            - ${REDIS_PORT:-6379}:6379
+        volumes:
+            - "redis:/data"
+        networks:
+            - laravel-k8s
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            retries: 3
+            timeout: 5s
+
+    mysql:
+        image: mariadb:10.11.4
+        ports:
+            - ${DB_PORT:-3306}:3306
+        environment:
+            - MARIADB_USER=${DB_USERNAME}
+            - MARIADB_PASSWORD=${DB_PASSWORD}
+            - MARIADB_DATABASE=${DB_DATABASE}
+            - MARIADB_ROOT_PASSWORD=root
+        volumes:
+            - "mariadb:/var/lib/mysql"
+        networks:
+            - laravel-k8s
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
+            retries: 3
+            timeout: 5s
+
+    mailhog:
+        image: mailhog/mailhog:v1.0.1
+        ports:
+            - "${MAIL_PORT}:8025"
+        networks:
+            - laravel-k8s
+
+    pma:
+        image: phpmyadmin:5.2
+        depends_on:
+            - mysql
+        ports:
+            - 8080:80
+        environment:
+            - PMA_HOST=mysql
+            - PMA_PORT=3306
+            - PMA_USER=${DB_USERNAME}
+            - PMA_PASSWORD=${DB_PASSWORD}
+        networks:
+            - laravel-k8s
+
+volumes:
+    redis:
+    mariadb:
+
+networks:
+    laravel-k8s:
