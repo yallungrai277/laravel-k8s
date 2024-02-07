@@ -4,6 +4,10 @@ on:
   push:
     branches: ['*']
 
+env:
+  # Override the default test environent phpunit connection to mysql
+  DB_CONNECTION: mysql
+
 jobs:
   pipelines:
     runs-on: ubuntu-latest
@@ -58,17 +62,11 @@ jobs:
 
     - name: Refresh database
       run: php artisan migrate:fresh
-      env:
-          DB_HOST: 127.0.0.1
 
     - name: Unit test
       run: php artisan test --testsuite=Unit
-      env:
-          DB_HOST: 127.0.0.1
 
     - name: Feature test
       run: php artisan test --testsuite=Feature
-      env:
-          DB_HOST: 127.0.0.1
 
 
