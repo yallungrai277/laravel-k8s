@@ -5,7 +5,7 @@ on:
     branches: ['*']
 
 jobs:
-  tests:
+  pipelines:
     runs-on: ubuntu-latest
 
     services:
@@ -19,9 +19,8 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 10
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     - name: Cache composer dependencies
       uses: actions/cache@v2
@@ -74,5 +73,15 @@ jobs:
 
     - name: Compile assets
       run: npm run build
+      # Todo cache and run cypress tests.
 
-# Todo cache and run cypress tests.
+  publish_to_container_registry:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    needs: [pipelines]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: List contents
+      run: ls -la
