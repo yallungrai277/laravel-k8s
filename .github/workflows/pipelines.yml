@@ -61,11 +61,11 @@ jobs:
     - name: Symlink storage
       run: php artisan storage:link
 
+    # Donot cache config as, CI will not find mysql instance.
     - name: Reset cache
       run: |
         php artisan cache:clear
         php artisan route:cache
-        php artisan config:cache
         php artisan event:cache
 
     - name: Unit test
