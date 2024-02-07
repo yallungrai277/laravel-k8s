@@ -1,4 +1,5 @@
-name: CI
+name: Pipelines
+
 on:
   push:
     branches: ['*']
@@ -39,25 +40,37 @@ jobs:
       run: |
         composer install --no-scripts
 
-    - name: Prepare Laravel Application
+    - name: Analyze code
+      run: ./vendor/bin/phpstan analyse --memory-limit=1G
+
+    - name: Coding standards
+      run: ./vendor/bin/pint --test
+
+    - name: Prepare app
       run: |
         cp .env.ci .env
         php artisan key:generate
 
-    - name: Check CI contains
-      run: cat .env
+    - name: Set directory permissions
+      run: chmod -R 777 storage bootstrap/cache
 
-    - name: Check test
-      run: php artisan migrate
+    - name: Optimize app
+      run: php artisan optimize
 
-    # - name: Directory Permissions
-    #   run: chmod -R 777 storage bootstrap/cache
+    - name: Symlink storage
+      run: php artisan storage:link
 
-    # - name: Run Test suite
-    #   run: php artisan test
+    - name: Refresh database
+      run: php artisan migrate:fresh
 
-    # - name: Install NPM dependencies
-    #   run: npm install
+    - name: Unit test
+      run: php artisan test --testsuite=Unit
 
-    # - name: Compile assets
-    #   run: npm run build
+    - name: Feature test
+      run: php artisan test --testsuite=Feature
+
+    - name: Install NPM dependencies
+      run: npm install
+
+    - name: Compile assets
+      run: npm run build
