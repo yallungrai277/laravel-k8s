@@ -51,7 +51,7 @@ jobs:
       run: ls -la
 
     - name: Test contents
-      run: cat .env && cat.env.ci
+      run: cat .env && cat .env.ci
 
     - name: Symlink storage
       run: php artisan storage:link
