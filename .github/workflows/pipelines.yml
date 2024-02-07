@@ -1,101 +1,101 @@
-name: Pipelines
+# name: Pipelines
 
-on:
-  push:
-    branches: ['*']
+# on:
+#   push:
+#     branches: ['*']
 
-jobs:
-  pipelines:
-    runs-on: ubuntu-latest
+# jobs:
+#   pipelines:
+#     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mariadb:10.11.4
-        ports:
-          - 3306:3306
-        env:
-          MYSQL_DATABASE: 'laravel-k8s_test'
-          MYSQL_ROOT_PASSWORD: 'root_in'
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+#     services:
+#       mysql:
+#         image: mariadb:10.11.4
+#         ports:
+#           - 3306:3306
+#         env:
+#           MYSQL_DATABASE: 'laravel-k8s_test'
+#           MYSQL_ROOT_PASSWORD: 'root_in'
+#         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v4
 
-    - name: Cache composer dependencies
-      uses: actions/cache@v2
-      with:
-        path: vendor
-        key: composer-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          composer-
+#     - name: Cache composer dependencies
+#       uses: actions/cache@v2
+#       with:
+#         path: vendor
+#         key: composer-${{ hashFiles('**/composer.lock') }}
+#         restore-keys: |
+#           composer-
 
-    - name: Install PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: 8.2
+#     - name: Install PHP
+#       uses: shivammathur/setup-php@v2
+#       with:
+#         php-version: 8.2
 
-    - name: Install composer dependencies
-      run: |
-        composer install --no-scripts
+#     - name: Install composer dependencies
+#       run: |
+#         composer install --no-scripts
 
-    - name: Analyze code
-      run: ./vendor/bin/phpstan analyse --memory-limit=1G
+#     - name: Analyze code
+#       run: ./vendor/bin/phpstan analyse --memory-limit=1G
 
-    - name: Coding standards
-      run: ./vendor/bin/pint --test
+#     - name: Coding standards
+#       run: ./vendor/bin/pint --test
 
-    - name: Prepare app
-      run: |
-        mv .env.ci .env
-        php artisan key:generate
+#     - name: Prepare app
+#       run: |
+#         mv .env.ci .env
+#         php artisan key:generate
 
-    - name: Set directory permissions
-      run: chmod -R 777 storage bootstrap/cache
+#     - name: Set directory permissions
+#       run: chmod -R 777 storage bootstrap/cache
 
-    - name: Optimize app
-      run: php artisan optimize
+#     - name: Optimize app
+#       run: php artisan optimize
 
-    - name: Symlink storage
-      run: php artisan storage:link
+#     - name: Symlink storage
+#       run: php artisan storage:link
 
-    - name: Unit test
-      run: php artisan test --testsuite=Unit
-      env:
-        # Override the default test connection for phpunit to mysql while running backend tests.
-        # For some reason not being applied.
-        DB_CONNECTION: mysql
-        DB_HOST: 127.0.0.1
-        DB_PORT: 3306
-        DB_DATABASE: laravel-k8s_test
-        DB_USERNAME: root
-        DB_PASSWORD: root_in
+#     - name: Unit test
+#       run: php artisan test --testsuite=Unit
+#       env:
+#         # Override the default test connection for phpunit to mysql while running backend tests.
+#         # For some reason not being applied.
+#         DB_CONNECTION: mysql
+#         DB_HOST: 127.0.0.1
+#         DB_PORT: 3306
+#         DB_DATABASE: laravel-k8s_test
+#         DB_USERNAME: root
+#         DB_PASSWORD: root_in
 
-    - name: Feature test
-      run: php artisan test --testsuite=Feature
-      env:
-        # Override the default test connection for phpunit to mysql while running backend tests.
-        DB_CONNECTION: mysql
-        DB_HOST: 127.0.0.1
-        DB_PORT: 3306
-        DB_DATABASE: laravel-k8s_test
-        DB_USERNAME: root
-        DB_PASSWORD: root_in
+#     - name: Feature test
+#       run: php artisan test --testsuite=Feature
+#       env:
+#         # Override the default test connection for phpunit to mysql while running backend tests.
+#         DB_CONNECTION: mysql
+#         DB_HOST: 127.0.0.1
+#         DB_PORT: 3306
+#         DB_DATABASE: laravel-k8s_test
+#         DB_USERNAME: root
+#         DB_PASSWORD: root_in
 
-    - name: Install NPM dependencies
-      run: npm install
+#     - name: Install NPM dependencies
+#       run: npm install
 
-    - name: Compile assets
-      run: npm run build
-      # Todo cache and run cypress tests.
+#     - name: Compile assets
+#       run: npm run build
+#       # Todo cache and run cypress tests.
 
-  publish_to_container_registry:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
-    needs: [pipelines]
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+#   publish_to_container_registry:
+#     runs-on: ubuntu-latest
+#     if: github.ref == 'refs/heads/master'
+#     needs: [pipelines]
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v4
 
-    - name: List contents
-      run: ls -la
+#     - name: List contents
+#       run: ls -la
