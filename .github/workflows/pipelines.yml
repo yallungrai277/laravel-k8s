@@ -74,3 +74,5 @@ jobs:
 
     - name: Compile assets
       run: npm run build
+
+# Todo cache and run cypress tests.

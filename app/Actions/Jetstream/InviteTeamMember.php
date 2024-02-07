@@ -15,6 +15,7 @@ use Laravel\Jetstream\Events\InvitingTeamMember;
 use Laravel\Jetstream\Jetstream;
 use Laravel\Jetstream\Mail\TeamInvitation;
 use Laravel\Jetstream\Rules\Role;
+use Laravel\Jetstream\TeamInvitation as TeamInvitationModel;
 
 class InviteTeamMember implements InvitesTeamMembers
 {
@@ -34,6 +35,7 @@ class InviteTeamMember implements InvitesTeamMembers
             'role' => $role,
         ]);
 
+        /** @var TeamInvitationModel $invitation */
         Mail::to($email)->send(new TeamInvitation($invitation));
     }
 
@@ -67,8 +69,8 @@ class InviteTeamMember implements InvitesTeamMembers
                 }),
             ],
             'role' => Jetstream::hasRoles()
-                            ? ['required', 'string', new Role]
-                            : null,
+                ? ['required', 'string', new Role]
+                : null,
         ]);
     }
 

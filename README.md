@@ -30,3 +30,5 @@ Note: The container is set up so that there is already a vite server for develop
 -   To do test pipelines and push to container registry.
 -   Increase php ini storage file upload size
 -   Add opcache etc.
+-   Cypress and pipelines optimization
+-   Improve final docker build

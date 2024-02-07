@@ -13,6 +13,9 @@ use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Jetstream\HasTeams;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property int $id
+ */
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens;
