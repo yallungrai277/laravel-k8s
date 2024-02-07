@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      mysql:
+      mysql_test:
         image: mariadb:10.11.4
         env:
           MARIADB_USER: laravel
