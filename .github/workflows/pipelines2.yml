@@ -68,3 +68,21 @@ jobs:
 
     - name: Feature test
       run: php artisan test --testsuite=Feature
+
+    - name: Install NPM dependencies
+      run: npm install
+
+    - name: Compile assets
+      run: npm run build
+      # Todo cache and run cypress tests.
+
+  publish_to_container_registry:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    needs: [pipelines]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: List contents
+      run: ls -la
