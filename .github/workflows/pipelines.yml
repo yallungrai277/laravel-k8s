@@ -39,6 +39,18 @@ jobs:
       run: |
         composer install --no-scripts
 
+    - name: Prepare app
+      run: |
+        cp .env.ci .env
+        php artisan key:generate
+
+    - name: Prepare app
+      run: |
+        cat .env
+
+    - name: Refresh database
+      run: php artisan migrate:fresh
+
     - name: Analyze code
       run: ./vendor/bin/phpstan analyse --memory-limit=1G
 
@@ -59,8 +71,8 @@ jobs:
     - name: Symlink storage
       run: php artisan storage:link
 
-    - name: Refresh database
-      run: php artisan migrate
+    # - name: Refresh database
+    #   run: php artisan migrate:fresh
 
     - name: Unit test
       run: php artisan test --testsuite=Unit
@@ -73,7 +85,7 @@ jobs:
 
     - name: Compile assets
       run: npm run build
-      # Todo cache and run cypress tests.
+    # Todo cache and run cypress tests.
 
   publish_to_container_registry:
     runs-on: ubuntu-latest
