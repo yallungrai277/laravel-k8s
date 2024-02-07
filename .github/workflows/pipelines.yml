@@ -10,6 +10,8 @@ jobs:
     services:
       mysql_test:
         image: mariadb:10.11.4
+        ports:
+          - 3306:3306
         env:
           MARIADB_USER: laravel
           MARIADB_PASSWORD: laravel
