@@ -18,6 +18,11 @@ jobs:
           MYSQL_ROOT_PASSWORD: 'root_in'
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
+      redis:
+        image: redis:6.0.20-alpine
+        ports:
+          - 6379:6379
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
