@@ -6,6 +6,8 @@ server {
 
     index index.php index.html index.htm index.nginx-debian.html;
 
+    client_max_body_size 100M;
+
     # _ makes sure that nginx does not try to map requests to a specific hostname
     # This allows us to specify the urls to our application as infrastructure changes,
     # without needing to change the application.

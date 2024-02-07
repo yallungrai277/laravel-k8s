@@ -37,6 +37,7 @@ services:
         volumes:
             - "./public:/var/www/html/public"
             - "./storage/app:/var/www/html/storage/app" # For images and uploads.
+            - "./docker/nginx/nginx.conf.template:/etc/nginx/templates/default.conf.template" # For nginx configs, Requires a full build of image on change if not specified here.
         networks:
             - laravel-k8s
 
