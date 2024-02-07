@@ -49,7 +49,7 @@ jobs:
         cat .env
 
     - name: Refresh database
-      run: php artisan migrate:fresh
+      run: php artisan test
 
     - name: Analyze code
       run: ./vendor/bin/phpstan analyse --memory-limit=1G
