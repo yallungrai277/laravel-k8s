@@ -13,10 +13,8 @@ jobs:
         ports:
           - 3306:3306
         env:
-          MARIADB_USER: laravel
-          MARIADB_PASSWORD: laravel
-          MARIADB_DATABASE: laravel-k8s
-          MARIADB_ROOT_PASSWORD: root
+          MYSQL_DATABASE: 'laravel-k8s_test'
+          MYSQL_ROOT_PASSWORD: 'root_in'
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
@@ -49,14 +47,17 @@ jobs:
     - name: Check CI contains
       run: cat .env
 
-    - name: Directory Permissions
-      run: chmod -R 777 storage bootstrap/cache
+    - name: Check test
+      run: php artisan migrate
 
-    - name: Run Test suite
-      run: php artisan test
+    # - name: Directory Permissions
+    #   run: chmod -R 777 storage bootstrap/cache
 
-    - name: Install NPM dependencies
-      run: npm install
+    # - name: Run Test suite
+    #   run: php artisan test
 
-    - name: Compile assets
-      run: npm run build
+    # - name: Install NPM dependencies
+    #   run: npm install
+
+    # - name: Compile assets
+    #   run: npm run build

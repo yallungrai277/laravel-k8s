@@ -100,10 +100,12 @@ services:
             retries: 3
             timeout: 5s
 
-    mysql_test:
+    mysql-tests:
         image: mariadb:10.11.4
         tmpfs: /var/lib/mysql
         restart: unless-stopped
+        ports:
+            - 3306
         environment:
             - MARIADB_USER=${DB_USERNAME}
             - MARIADB_PASSWORD=${DB_PASSWORD}
