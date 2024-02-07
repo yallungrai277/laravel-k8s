@@ -8,8 +8,8 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      mysql_test:
-        image: mysql:8.0
+      mysql:
+        image: mariadb:10.11.4
         ports:
           - 3306:3306
         env:
