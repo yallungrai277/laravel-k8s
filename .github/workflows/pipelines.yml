@@ -1,87 +1,91 @@
-# name: Pipelines
+name: Pipelines
 
-# on:
-#   push:
-#     branches: ['*']
+on:
+  push:
+    branches: ['*']
 
-# jobs:
-#   pipelines:
-#     runs-on: ubuntu-latest
+env:
+  # Override the default test connection for phpunit to mysql while running backend tests.
+  DB_CONNECTION: mysql
 
-#     services:
-#       mysql:
-#         image: mariadb:10.11.4
-#         ports:
-#           - 3306:3306
-#         env:
-#           MYSQL_DATABASE: 'laravel-k8s_test'
-#           MYSQL_ROOT_PASSWORD: 'root_in'
-#         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+jobs:
+  pipelines:
+    runs-on: ubuntu-latest
 
-#     steps:
-#     - name: Checkout code
-#       uses: actions/checkout@v4
+    services:
+      mysql:
+        image: mariadb:10.11.4
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_DATABASE: 'laravel-k8s_test'
+          MYSQL_ROOT_PASSWORD: 'root_in'
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
-#     - name: Cache composer dependencies
-#       uses: actions/cache@v2
-#       with:
-#         path: vendor
-#         key: composer-${{ hashFiles('**/composer.lock') }}
-#         restore-keys: |
-#           composer-
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-#     - name: Install PHP
-#       uses: shivammathur/setup-php@v2
-#       with:
-#         php-version: 8.2
+    - name: Cache composer dependencies
+      uses: actions/cache@v2
+      with:
+        path: vendor
+        key: composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          composer-
 
-#     - name: Install composer dependencies
-#       run: |
-#         composer install --no-scripts
+    - name: Install PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.2
 
-#     - name: Analyze code
-#       run: ./vendor/bin/phpstan analyse --memory-limit=1G
+    - name: Install composer dependencies
+      run: |
+        composer install --no-scripts
 
-#     - name: Coding standards
-#       run: ./vendor/bin/pint --test
+    - name: Analyze code
+      run: ./vendor/bin/phpstan analyse --memory-limit=1G
 
-#     - name: Prepare app
-#       run: |
-#         cp .env.ci .env
-#         php artisan key:generate
+    - name: Coding standards
+      run: ./vendor/bin/pint --test
 
-#     - name: Set directory permissions
-#       run: chmod -R 777 storage bootstrap/cache
+    - name: Prepare app
+      run: |
+        cp .env.ci .env
+        php artisan key:generate
 
-#     - name: Optimize app
-#       run: php artisan optimize
+    - name: Set directory permissions
+      run: chmod -R 777 storage bootstrap/cache
 
-#     - name: Symlink storage
-#       run: php artisan storage:link
+    - name: Optimize app
+      run: php artisan optimize
 
-#     - name: Refresh database
-#       run: php artisan migrate:fresh
+    - name: Symlink storage
+      run: php artisan storage:link
 
-#     - name: Unit test
-#       run: php artisan test --testsuite=Unit
+    - name: Refresh database
+      run: php artisan migrate:fresh
 
-#     - name: Feature test
-#       run: php artisan test --testsuite=Feature
+    - name: Unit test
+      run: php artisan test --testsuite=Unit
 
-#     - name: Install NPM dependencies
-#       run: npm install
+    - name: Feature test
+      run: php artisan test --testsuite=Feature
 
-#     - name: Compile assets
-#       run: npm run build
-#       # Todo cache and run cypress tests.
+    - name: Install NPM dependencies
+      run: npm install
 
-#   publish_to_container_registry:
-#     runs-on: ubuntu-latest
-#     if: github.ref == 'refs/heads/master'
-#     needs: [pipelines]
-#     steps:
-#     - name: Checkout code
-#       uses: actions/checkout@v4
+    - name: Compile assets
+      run: npm run build
+      # Todo cache and run cypress tests.
 
-#     - name: List contents
-#       run: ls -la
+  publish_to_container_registry:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    needs: [pipelines]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: List contents
+      run: ls -la
