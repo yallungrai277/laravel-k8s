@@ -1,27 +1,41 @@
-on: push
 name: CI
+on:
+  push:
+    branches: ['*']
+
 jobs:
-  phpunit:
+  tests:
     runs-on: ubuntu-latest
-    container:
-      image: kirschbaumdevelopment/laravel-test-runner:7.3
 
     services:
       mysql:
         image: mariadb:10.11.4
-        env:
-           MARIADB_USER=: laravel
-           MARIADB_PASSWORD: laravel
-           MARIADB_DATABASE: laravel-k8s
-           MARIADB_ROOT_PASSWORD: root
         ports:
-          - 33306:3306
+          - 3306:3306
+        env:
+          MARIADB_USER: laravel
+          MARIADB_PASSWORD: laravel
+          MARIADB_DATABASE: laravel-k8s
+          MARIADB_ROOT_PASSWORD: root
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
       with:
-        fetch-depth: 1
+        fetch-depth: 10
+
+    - name: Cache composer dependencies
+      uses: actions/cache@v2
+      with:
+        path: vendor
+        key: composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          composer-
+
+    - name: Install PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.2
 
     - name: Install composer dependencies
       run: |
@@ -32,5 +46,17 @@ jobs:
         cp .env.ci .env
         php artisan key:generate
 
-    - name: Run Testsuite
-      run: vendor/bin/phpunit tests/
+    - name: Check CI contains
+      run: cat .env
+
+    - name: Directory Permissions
+      run: chmod -R 777 storage bootstrap/cache
+
+    - name: Run Test suite
+      run: php artisan test
+
+    - name: Install NPM dependencies
+      run: npm install
+
+    - name: Compile assets
+      run: npm run build
