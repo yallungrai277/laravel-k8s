@@ -75,11 +75,11 @@ jobs:
       - name: Clear Config
         run: php artisan config:clear
 
-      # - name: Migrate Test Database
-      #   run: php artisan migrate --env=testing --seed --force
-      #   env:
-      #     DB_PORT: ${{ job.services.mysql.ports['3306'] }}
-      #     REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
+      - name: Migrate Test Database
+        run: php artisan migrate --env=testing --seed --force
+        env:
+          DB_PORT: ${{ job.services.mysql.ports['3306'] }}
+          REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
 
       - name: Change Directory Permissions
         run: chmod -R 777 storage bootstrap/cache
