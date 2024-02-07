@@ -21,7 +21,7 @@ Note: The container is set up so that there is already a vite server for develop
 
 ### PHP stan
 
--   docker exec [cli_container_name] ./vendor/bin/phpstan analyse --memory-limit=1
+-   docker exec [cli_container_name] ./vendor/bin/phpstan analyse --memory-limit=1G
 
 ## Todo
 

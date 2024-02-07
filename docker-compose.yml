@@ -28,6 +28,7 @@ services:
             context: .
             target: web_server
         image: laravel-k8s/web_server
+        restart: unless-stopped
         ports:
             - "80:80"
         environment:
@@ -54,6 +55,7 @@ services:
             context: .
             target: frontend
         command: ["/bin/sh", "-c", "npm install && npm run dev"]
+        restart: unless-stopped
         image: laravel-k8s/frontend
         ports:
             - 5173:5173
@@ -68,6 +70,7 @@ services:
 
     redis:
         image: redis:6.0.20-alpine
+        restart: unless-stopped
         ports:
             - ${REDIS_PORT:-6379}:6379
         volumes:
@@ -81,6 +84,7 @@ services:
 
     mysql:
         image: mariadb:10.11.4
+        restart: unless-stopped
         ports:
             - ${DB_PORT:-3306}:3306
         environment:
@@ -90,6 +94,22 @@ services:
             - MARIADB_ROOT_PASSWORD=root
         volumes:
             - "mariadb:/var/lib/mysql"
+        networks:
+            - laravel-k8s
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
+            retries: 3
+            timeout: 5s
+
+    mysql_test:
+        image: mariadb:10.11.4
+        tmpfs: /var/lib/mysql
+        restart: unless-stopped
+        environment:
+            - MARIADB_USER=${DB_USERNAME}
+            - MARIADB_PASSWORD=${DB_PASSWORD}
+            - MARIADB_DATABASE=${DB_DATABASE}
+            - MARIADB_ROOT_PASSWORD=root
         networks:
             - laravel-k8s
         healthcheck:
@@ -121,6 +141,7 @@ services:
 volumes:
     redis:
     mariadb:
+    mariadbtests:
 
 networks:
     laravel-k8s:
