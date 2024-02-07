@@ -47,6 +47,12 @@ jobs:
         cp .env.ci .env
         php artisan key:generate
 
+    - name: List contents
+      run: ls -la
+
+    - name: Test contents
+      run: cat .env && cat.env.ci
+
     - name: Symlink storage
       run: php artisan storage:link
 
