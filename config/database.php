@@ -66,7 +66,7 @@ return [
         'testing' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
-            'host' => 'mysql_test', // See docker-compose.yml
+            'host' => 'mysql', // See docker-compose.yml
             'port' => env('DB_PORT', '3306'),
             'database' => env('DB_DATABASE', 'forge'),
             'username' => env('DB_USERNAME', 'forge'),
