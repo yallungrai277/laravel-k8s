@@ -25,7 +25,7 @@ Note: The container is set up so that there is already a vite server for develop
 
 ## Todo
 
--   Add a post deploy script
+-   Add a post deploy script (See multi stage builds)
 -   Make other changes (Reference to original repo for if anything needed.)
 -   To do test pipelines and push to container registry.
 -   Increase php ini storage file upload size

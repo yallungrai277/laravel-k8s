@@ -4,3 +4,7 @@ node_modules
 vendor
 .env
 .editorconfig
+storage/framework/**
+storage/app/**
+storage/logs/**
+bootsrap/cache

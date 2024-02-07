@@ -11,6 +11,7 @@ services:
             - ".:/var/www/html"
         networks:
             - laravel-k8s
+    # App
     fpm:
         build:
             context: .
@@ -31,9 +32,6 @@ services:
         restart: unless-stopped
         ports:
             - "80:80"
-        environment:
-            # This gets mapped into the /docker/nginx/nginx.conf.template at runtime.
-            FPM_HOST: "fpm:9000"
         volumes:
             - "./public:/var/www/html/public"
             - "./storage/app:/var/www/html/storage/app" # For images and uploads.

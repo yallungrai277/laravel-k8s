@@ -96,6 +96,9 @@ ARG PHP_PECL_EXTS
 
 WORKDIR /var/www/html
 
+# Make files ignored by dockerignore. These needs to have persistent volumes on deployment along with /storage/public
+RUN mkdir -p boostrap/cache storage/app storage/framework/cache storage/framework/sessions storage/framework/testing storage/framework/views storage/logs
+
 RUN apk add --virtual build-dependencies --no-cache ${PHPIZE_DEPS} openssl ca-certificates libxml2-dev oniguruma-dev && \
     docker-php-ext-install -j$(nproc) ${PHP_EXTS} && \
     pecl install ${PHP_PECL_EXTS} && \
@@ -112,10 +115,10 @@ COPY --from=composer_base --chown=www-data /var/www/html /var/www/html
 COPY --from=frontend --chown=www-data /var/www/html/public /var/www/html/public
 
 # We want to cache the event, routes, and views so we don't try to write them when we are in Kubernetes.
-# Docker builds should be as immutable as possible.
+# Docker builds should be as immutable as possible. Can be done after a post deploy script ?
 RUN php artisan event:cache && \
     php artisan route:cache && \
-    php artisan view:cache
+    php artisan storage:link
 
 ########################################################################################################
 ################################################# NGINX ################################################
