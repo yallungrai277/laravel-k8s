@@ -52,7 +52,7 @@ jobs:
 
     - name: Prepare app
       run: |
-        cp .env.ci .env
+        mv .env.ci .env
         php artisan key:generate
 
     - name: Set directory permissions
