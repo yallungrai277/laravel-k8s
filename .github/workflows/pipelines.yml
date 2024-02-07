@@ -60,7 +60,7 @@ jobs:
       run: php artisan storage:link
 
     - name: Refresh database
-      run: php artisan migrate:fresh
+      run: php artisan migrate
 
     - name: Unit test
       run: php artisan test --testsuite=Unit
