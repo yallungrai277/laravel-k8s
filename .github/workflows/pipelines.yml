@@ -7,6 +7,7 @@ on:
 env:
   # Override the default test connection for phpunit to mysql while running backend tests.
   DB_CONNECTION: mysql
+  DB_HOST: 127.0.0.1
 
 jobs:
   pipelines:
