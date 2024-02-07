@@ -59,31 +59,16 @@ jobs:
     - name: Refresh database
       run: php artisan migrate:fresh
       env:
-          DB_CONNECTION: mysql
           DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: laravel-k8s_test
-          DB_USERNAME: root
-          DB_PASSWORD: root_in
 
     - name: Unit test
       run: php artisan test --testsuite=Unit
       env:
-          DB_CONNECTION: mysql
           DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: laravel-k8s_test
-          DB_USERNAME: root
-          DB_PASSWORD: root_in
 
     - name: Feature test
       run: php artisan test --testsuite=Feature
       env:
-          DB_CONNECTION: mysql
           DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_DATABASE: laravel-k8s_test
-          DB_USERNAME: root
-          DB_PASSWORD: root_in
 
 
