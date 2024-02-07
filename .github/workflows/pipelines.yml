@@ -64,12 +64,14 @@ jobs:
       env:
         # Override the default test connection for phpunit to mysql while running backend tests.
         DB_CONNECTION: mysql
+        DB_HOST: 127.0.0.1
 
     - name: Feature test
       run: php artisan test --testsuite=Feature
       env:
         # Override the default test connection for phpunit to mysql while running backend tests.
         DB_CONNECTION: mysql
+        DB_HOST: 127.0.0.1
 
     - name: Install NPM dependencies
       run: npm install
