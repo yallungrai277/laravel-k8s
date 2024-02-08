@@ -103,12 +103,12 @@ jobs:
         IMAGE_BASE_NAME: laravel-k8s
       # Todo add a unique tag instead of latest.
       run: |
-        docker build . --target cli -t ghcr.io/${{ env.USERNAME }}/${{ IMAGE_BASE_NAME }}-cli:latest && docker push ghcr.io/${{ env.USERNAME }}/${{ IMAGE_BASE_NAME }}-cli:latest
-        docker build . --target fpm_server -t ghcr.io/${{ env.USERNAME }}/${{ IMAGE_BASE_NAME }}-app:latest && docker push ghcr.io/${{ env.USERNAME }}/${{ IMAGE_BASE_NAME }}-app:latest
-        docker build . --target web_server -t ghcr.io/${{ env.USERNAME }}/${{ IMAGE_BASE_NAME }}-nginx:latest && docker push ghcr.io/${{ env.USERNAME }}/${{ IMAGE_BASE_NAME }}-nginx:latest
+        docker build . --target cli -t ghcr.io/${{ env.USERNAME }}/${{ env.IMAGE_BASE_NAME }}-cli:latest && docker push ghcr.io/${{ env.USERNAME }}/${{ env.IMAGE_BASE_NAME }}-cli:latest
+        docker build . --target fpm_server -t ghcr.io/${{ env.USERNAME }}/${{ env.IMAGE_BASE_NAME }}-app:latest && docker push ghcr.io/${{ env.USERNAME }}/${{ env.IMAGE_BASE_NAME }}-app:latest
+        docker build . --target web_server -t ghcr.io/${{ env.USERNAME }}/${{ env.IMAGE_BASE_NAME }}-nginx:latest && docker push ghcr.io/${{ env.USERNAME }}/${{ env.IMAGE_BASE_NAME }}-nginx:latest
 
     - name: Remove docker images
       run: |
-        docker image rm ${{ IMAGE_BASE_NAME }}-cli:latest
-        docker image rm ${{ IMAGE_BASE_NAME }}-app:latest
-        docker image rm ${{ IMAGE_BASE_NAME }}-nginx:latest
+        docker image rm ${{ env.IMAGE_BASE_NAME }}-cli:latest
+        docker image rm ${{ env.IMAGE_BASE_NAME }}-app:latest
+        docker image rm ${{ env.IMAGE_BASE_NAME }}-nginx:latest
