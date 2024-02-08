@@ -62,7 +62,7 @@ services:
             - ".:/var/www/html"
             # Add node_modules as singular volume.
             # This prevents our local node_modules from being propagated into the container,
-            # So the node_modules can be compiled for each of the different architectures (Local, Image)
+            # So the node_modules can be compiled for each of the different architectures.
             - "/var/www/html/node_modules"
         networks:
             - laravel-k8s

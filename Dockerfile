@@ -2,36 +2,23 @@
 ################################################## Composer ############################################
 ########################################################################################################
 
-
-# You can see a list of required extensions for Laravel here: https://laravel.com/docs/8.x/deployment#server-requirements
-ARG PHP_EXTS="bcmath ctype fileinfo mbstring pdo pdo_mysql dom pcntl"
-ARG PHP_PECL_EXTS="redis"
-
 FROM composer:2.6.6 as composer_base
 
-ARG PHP_EXTS
-ARG PHP_PECL_EXTS
-
-RUN mkdir -p /var/www/html /var/www/html/bin
+RUN mkdir -p /var/www/html
 
 WORKDIR /var/www/html
 
-# We need to create a composer group and user, and create a home directory for it, so we keep the rest of our image safe,
-# And not accidentally run malicious scripts
 RUN addgroup -S composer \
     && adduser -S composer -G composer \
-    && chown -R composer /var/www/html \
-    && apk add --virtual build-dependencies --no-cache ${PHPIZE_DEPS} openssl ca-certificates libxml2-dev oniguruma-dev \
-    && docker-php-ext-install -j$(nproc) ${PHP_EXTS} \
-    && pecl install ${PHP_PECL_EXTS} \
-    && docker-php-ext-enable ${PHP_PECL_EXTS} \
-    && apk del build-dependencies
+    && chown -R composer /var/www/html
 
+COPY ./docker/scripts ./docker/scripts
+
+RUN chmod +x ./docker/scripts/install_php_extensions.sh && ./docker/scripts/install_php_extensions.sh
 
 # Next we want to switch over to the composer user before running installs.
 # This is very important, so any extra scripts that composer wants to run,
 # don't have access to the root filesystem.
-# This especially important when installing packages from unverified sources.
 USER composer
 
 COPY --chown=composer composer.json composer.lock ./
@@ -45,7 +32,6 @@ COPY --chown=composer . .
 
 # Now that the code base and packages are all available, we can run the install again, and let it run any install scripts.
 RUN composer install --no-dev --prefer-dist
-
 
 ########################################################################################################
 ############################################### Frontend ###############################################
@@ -66,22 +52,15 @@ RUN npm install && \
 
 FROM php:8.2-alpine as cli
 
-ARG PHP_EXTS
-ARG PHP_PECL_EXTS
-
 WORKDIR /var/www/html
 
-# We need to install some requirements into our image,
-# used to compile our PHP extensions, as well as install all the extensions themselves.
-# https://laravel.com/docs/8.x/deployment#server-requirements
-RUN apk add --virtual build-dependencies --no-cache ${PHPIZE_DEPS} openssl ca-certificates libxml2-dev oniguruma-dev && \
-    docker-php-ext-install -j$(nproc) ${PHP_EXTS} && \
-    pecl install ${PHP_PECL_EXTS} && \
-    docker-php-ext-enable ${PHP_PECL_EXTS} && \
-    apk del build-dependencies
+COPY ./docker/scripts ./docker/scripts
+
+RUN chmod +x ./docker/scripts/install_php_extensions.sh && ./docker/scripts/install_php_extensions.sh
 
 # Copy in our code base from our initial build which we installed in the previous stage
 COPY --from=composer_base /var/www/html /var/www/html
+# Copy composer binary so that composer can be run.
 COPY --from=composer_base /usr/bin/composer /usr/bin/composer
 COPY --from=frontend /var/www/html/public /var/www/html/public
 
@@ -91,19 +70,14 @@ COPY --from=frontend /var/www/html/public /var/www/html/public
 
 FROM php:8.2-fpm-alpine as fpm_server
 
-ARG PHP_EXTS
-ARG PHP_PECL_EXTS
-
 WORKDIR /var/www/html
 
 # Make files ignored by dockerignore. These needs to have persistent volumes on deployment along with /storage/public
 RUN mkdir -p boostrap/cache storage/app storage/framework/cache storage/framework/sessions storage/framework/testing storage/framework/views storage/logs
 
-RUN apk add --virtual build-dependencies --no-cache ${PHPIZE_DEPS} openssl ca-certificates libxml2-dev oniguruma-dev && \
-    docker-php-ext-install -j$(nproc) ${PHP_EXTS} && \
-    pecl install ${PHP_PECL_EXTS} && \
-    docker-php-ext-enable ${PHP_PECL_EXTS} && \
-    apk del build-dependencies
+COPY ./docker/scripts ./docker/scripts
+
+RUN chmod +x ./docker/scripts/install_php_extensions.sh && ./docker/scripts/install_php_extensions.sh
 
 # As FPM uses the www-data user when running our application,
 # we need to make sure that we also use that user when starting up,
