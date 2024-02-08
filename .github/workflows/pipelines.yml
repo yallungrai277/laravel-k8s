@@ -98,7 +98,10 @@ jobs:
         password: ${{ secrets.GHCR_PAT }} # Personal access token
 
     - name: Push to github container registry
+      env:
+        USERNAME: ${{ secrets.GHCR_USERNAME }}
+      # Todo create a Makefile for this
       run: |
-        docker build . --target cli -t ghcr.io/yallungrai277/laravel-k8s-cli:latest && docker push docker push ghcr.io/yallungrai277/laravel-k8s-cli:latest
-        docker build . --target fpm_server -t ghcr.io/yallungrai277/laravel-k8s-app:latest && docker push docker push ghcr.io/yallungrai277/laravel-k8s-app:latest
-        docker build . --target web_server -t ghcr.io/yallungrai277/laravel-k8s-nginx:latest && docker push docker push ghcr.io/yallungrai277/laravel-k8s-nginx:latest
+        docker build . --target cli -t ghcr.io/${{ env.USERNAME }}/laravel-k8s-cli:latest && docker push ghcr.io/${{ env.USERNAME }}/laravel-k8s-cli:latest
+        docker build . --target fpm_server -t ghcr.io/${{ env.USERNAME }}/laravel-k8s-app:latest && docker push ghcr.io/${{ env.USERNAME }}/laravel-k8s-app:latest
+        docker build . --target web_server -t ghcr.io/${{ env.USERNAME }}/laravel-k8s-nginx:latest && docker push ghcr.io/${{ env.USERNAME }}/laravel-k8s-nginx:latest
