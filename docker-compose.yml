@@ -5,8 +5,8 @@ services:
         build:
             context: .
             target: cli
+        entrypoint: ["tail", "-f", "/dev/null"]
         image: laravel-k8s/cli
-        entrypoint: ["tail", "-f", "/dev/null"] # Keeps the interactive shell alive.
         volumes:
             - ".:/var/www/html"
         networks:
@@ -23,6 +23,8 @@ services:
             - ".:/var/www/html"
         networks:
             - laravel-k8s
+        depends_on:
+            - mysql
 
     web:
         build:
@@ -35,9 +37,11 @@ services:
         volumes:
             - "./public:/var/www/html/public"
             - "./storage/app:/var/www/html/storage/app" # For images and uploads.
-            - "./docker/nginx/nginx.conf.template:/etc/nginx/templates/default.conf.template" # For nginx configs, Requires a full build of image on change if not specified here.
+            - "./docker/nginx/nginx.conf.template:/etc/nginx/templates/default.conf.template" # For nginx dev config, since our image uses prod template we override that here.
         networks:
             - laravel-k8s
+        depends_on:
+            - fpm
 
     cron:
         build:
@@ -48,12 +52,15 @@ services:
             - ".:/var/www/html"
         networks:
             - laravel-k8s
+        depends_on:
+            - cli
 
     frontend:
         build:
             context: .
             target: frontend
-        command: ["/bin/sh", "-c", "npm install && npm run dev"]
+        command: ["/bin/sh", "-c", "npm install && npm run dev"] # Run command in exec mode without creating a new subprocess/shell inside container,
+        # -c flag stand for run the command from a string and as it is, otherwise /bin/sh without -c flag will try to run a executable script file and throw an error.
         restart: unless-stopped
         image: laravel-k8s/frontend
         ports:
@@ -130,7 +137,7 @@ services:
         depends_on:
             - mysql
         ports:
-            - 8080:80
+            - 8081:80
         environment:
             - PMA_HOST=mysql
             - PMA_PORT=3306
