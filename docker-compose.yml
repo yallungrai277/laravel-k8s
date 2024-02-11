@@ -13,11 +13,11 @@ services:
         networks:
             - laravel-k8s
     # App
-    fpm:
+    app:
         build:
             context: .
-            target: fpm_server
-        image: laravel-k8s/fpm_server
+            target: app
+        image: laravel-k8s/app
         container_name: app
         environment:
             APP_DEBUG: "true"
@@ -44,7 +44,7 @@ services:
         networks:
             - laravel-k8s
         depends_on:
-            - fpm
+            - app
 
     cron:
         build:
