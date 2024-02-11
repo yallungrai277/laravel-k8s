@@ -33,9 +33,8 @@ server {
     location ~ \.php$ {
         include fastcgi_params;
         fastcgi_intercept_errors on;
-        # Nginx 1.19 Docker images support using templates for nginx configurations where we can use environment variables.
-        # Replace the FPM host at runtime
-        fastcgi_pass fpm:9000;
+        # Kubernetes makes its fpm service available on localhost.
+        fastcgi_pass 127.0.01:9000;
         fastcgi_param SCRIPT_FILENAME $document_root/$fastcgi_script_name;
     }
 
