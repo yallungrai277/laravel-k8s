@@ -38,7 +38,7 @@ RUN composer install --no-dev --prefer-dist -o
 ############################################### Frontend ###############################################
 ########################################################################################################
 
-FROM node:16 as frontend
+FROM node:18 as frontend
 
 COPY --from=composer_base /var/www/html /var/www/html
 
@@ -46,6 +46,9 @@ WORKDIR /var/www/html
 
 RUN npm install && \
     npm run build
+
+# Remove hot from the container in case if added, otherise vite will maker requests to assets as a dev server.
+RUN rm -rf public/hot
 
 ########################################################################################################
 ################################################## CLI #################################################
@@ -104,7 +107,7 @@ RUN php artisan event:cache && \
 ################################################# NGINX ################################################
 ########################################################################################################
 
-FROM nginx:1.20-alpine as web_server
+FROM nginx:1.20-alpine as web
 
 WORKDIR /var/www/html
 

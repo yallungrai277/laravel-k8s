@@ -1,0 +1,98 @@
+# Note this is for testing purpose only.
+# Will be removed.
+
+version: "3"
+services:
+  # Cli not needed really, but it has composer binary over on to run composer commands.
+  cli:
+    build:
+      context: .
+      target: cli
+    entrypoint: ["tail", "-f", "/dev/null"]
+    container_name: cli
+    image: laravel-k8s/cli
+    networks:
+      - laravel-k8s
+
+  # App
+  app:
+    build:
+      context: .
+      target: app
+    image: laravel-k8s/app
+    container_name: app
+    networks:
+      - laravel-k8s
+    depends_on:
+      - mysql
+
+  web:
+    build:
+      context: .
+      target: web
+    image: laravel-k8s/web
+    container_name: web
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      # Use volume for image and uploas for above as well.
+      - "./docker/nginx/nginx.conf.template:/etc/nginx/templates/default.conf.template" # For nginx dev config, since our image uses prod template we override that here.
+    networks:
+      - laravel-k8s
+    depends_on:
+      - app
+
+  cron:
+    build:
+      context: .
+      target: cron
+    image: laravel-k8s/cron
+    container_name: cron
+    networks:
+      - laravel-k8s
+    depends_on:
+      - cli
+
+  redis:
+    image: redis:6.0.20-alpine
+    restart: unless-stopped
+    container_name: redis
+    ports:
+      - ${REDIS_PORT:-6379}:6379
+    volumes:
+      - "redis:/data"
+    networks:
+      - laravel-k8s
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      retries: 3
+      timeout: 5s
+
+  mysql:
+    image: mariadb:10.11.4
+    restart: unless-stopped
+    container_name: db
+    ports:
+      - ${DB_PORT:-3306}:3306
+    environment:
+      - MARIADB_USER=${DB_USERNAME}
+      - MARIADB_PASSWORD=${DB_PASSWORD}
+      - MARIADB_DATABASE=${DB_DATABASE}
+      - MARIADB_ROOT_PASSWORD=root
+    volumes:
+      - "mariadb:/var/lib/mysql"
+    networks:
+      - laravel-k8s
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
+      retries: 3
+      timeout: 5s
+
+volumes:
+  redis:
+  mariadb:
+  mariadbtests:
+
+networks:
+  laravel-k8s:

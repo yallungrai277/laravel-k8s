@@ -5,6 +5,7 @@ services:
         build:
             context: .
             target: cli
+            # Keep the interactive shell alive.
         entrypoint: ["tail", "-f", "/dev/null"]
         container_name: cli
         image: laravel-k8s/cli
@@ -12,6 +13,7 @@ services:
             - ".:/var/www/html"
         networks:
             - laravel-k8s
+
     # App
     app:
         build:
@@ -31,8 +33,8 @@ services:
     web:
         build:
             context: .
-            target: web_server
-        image: laravel-k8s/web_server
+            target: web
+        image: laravel-k8s/web
         container_name: web
         restart: unless-stopped
         ports:

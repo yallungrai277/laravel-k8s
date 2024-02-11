@@ -104,5 +104,5 @@ jobs:
       # Todo add a unique tag instead of latest.
       run: |
         docker build . --target cli -t ghcr.io/${{ env.USERNAME }}/${{ env.IMAGE_BASE_NAME }}-cli:latest && docker push ghcr.io/${{ env.USERNAME }}/${{ env.IMAGE_BASE_NAME }}-cli:latest
-        docker build . --target fpm_server -t ghcr.io/${{ env.USERNAME }}/${{ env.IMAGE_BASE_NAME }}-app:latest && docker push ghcr.io/${{ env.USERNAME }}/${{ env.IMAGE_BASE_NAME }}-app:latest
-        docker build . --target web_server -t ghcr.io/${{ env.USERNAME }}/${{ env.IMAGE_BASE_NAME }}-nginx:latest && docker push ghcr.io/${{ env.USERNAME }}/${{ env.IMAGE_BASE_NAME }}-nginx:latest
+        docker build . --target app -t ghcr.io/${{ env.USERNAME }}/${{ env.IMAGE_BASE_NAME }}-app:latest && docker push ghcr.io/${{ env.USERNAME }}/${{ env.IMAGE_BASE_NAME }}-app:latest
+        docker build . --target web -t ghcr.io/${{ env.USERNAME }}/${{ env.IMAGE_BASE_NAME }}-nginx:latest && docker push ghcr.io/${{ env.USERNAME }}/${{ env.IMAGE_BASE_NAME }}-nginx:latest
