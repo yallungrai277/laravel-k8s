@@ -34,6 +34,11 @@ COPY --chown=composer . .
 # Now that the code base and packages are all available, we can run the install again, and let it run any install scripts.
 RUN composer install --no-dev --prefer-dist -o
 
+# Make files ignored by dockerignore. These needs to have persistent volumes on deployment along with /storage/public.
+RUN mkdir -p boostrap/cache storage/app storage/framework/cache storage/framework/sessions storage/framework/testing storage/framework/views storage/logs
+
+RUN chmod -R 777 boostrap storage
+
 ########################################################################################################
 ############################################### Frontend ###############################################
 ########################################################################################################
@@ -91,11 +96,6 @@ COPY --from=composer_base --chown=www-data /var/www/html /var/www/html
 COPY --from=frontend --chown=www-data /var/www/html/public /var/www/html/public
 
 RUN cp .env.prod .env
-
-# Make files ignored by dockerignore. These needs to have persistent volumes on deployment along with /storage/public
-RUN mkdir -p boostrap/cache storage/app storage/framework/cache storage/framework/sessions storage/framework/testing storage/framework/views storage/logs
-
-RUN chmod -R 777 boostrap storage
 
 # We want to cache the event, routes, and views so we don't try to write them when we are in Kubernetes.
 # Docker builds should be as immutable as possible. Can be done after a post deploy script ?
