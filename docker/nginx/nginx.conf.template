@@ -2,7 +2,8 @@
 server {
     listen 80;
     listen [::]:80;
-    server_name _;
+    # Ensure that this host is recognizable under /etc/hosts of local machine not the docker container.
+    server_name laravel-k8s.test;
     root /var/www/html/public;
 
     client_max_body_size 100M;

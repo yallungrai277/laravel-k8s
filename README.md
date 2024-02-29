@@ -29,11 +29,6 @@ or running. simply remove it from the yaml file and run below. (Will work since 
 
 ## Todo
 
--   Add a post deploy script (See multi stage builds)
--   Make other changes (Reference to original repo for if anything needed.)
--   To do test pipelines and push to container registry.
--   Increase php ini storage file upload size
--   Add opcache etc.
 -   Cypress and pipelines optimization
 -   Improve final docker build
 -   Run parallel test on CI
