@@ -32,7 +32,7 @@ RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 COPY --chown=composer . .
 
 # Now that the code base and packages are all available, we can run the install again, and let it run any install scripts.
-RUN composer install --no-dev --prefer-dist -o
+RUN composer install --optimize-autoloader --no-dev --prefer-dist -o
 
 # Make files ignored by dockerignore. These needs to have persistent volumes on deployment along with /storage/public.
 RUN mkdir -p boostrap/cache storage/app storage/framework/cache storage/framework/sessions storage/framework/testing storage/framework/views storage/logs
@@ -80,6 +80,9 @@ COPY --from=frontend /var/www/html/public /var/www/html/public
 
 FROM php:8.2-fpm-alpine as app
 
+# Copy php ini configurations.
+COPY ./docker/php/php.ini /usr/local/etc/php/php.ini
+
 WORKDIR /var/www/html
 
 COPY ./docker/scripts ./docker/scripts
@@ -100,6 +103,8 @@ RUN cp .env.prod .env
 # We want to cache the event, routes, and views so we don't try to write them when we are in Kubernetes.
 # Docker builds should be as immutable as possible. Can be done after a post deploy script ?
 RUN php artisan event:cache && \
+    php artisan config:cache && \
+    php artisan view:cache && \
     php artisan route:cache && \
     php artisan storage:link
 
