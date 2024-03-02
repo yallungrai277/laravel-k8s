@@ -1,5 +1,7 @@
 #!/bin/sh
 
+#Note: This script should be run inside the container.
+
 set -e
 
 # You can see a list of required extensions for Laravel here: https://laravel.com/docs/8.x/deployment#server-requirements

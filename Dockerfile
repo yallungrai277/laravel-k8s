@@ -13,9 +13,9 @@ RUN addgroup -S composer \
     && chown -R composer /var/www/html
 
 # Install required extensions required by some of composer packages.
-COPY ./docker/scripts ./docker/scripts
+COPY ./scripts ./scripts
 
-RUN chmod +x ./docker/scripts/install_php_extensions.sh && ./docker/scripts/install_php_extensions.sh
+RUN chmod +x ./scripts/install_php_extensions.sh && ./scripts/install_php_extensions.sh
 
 # Next we want to switch over to the composer user before running installs.
 # This is very important, so any extra scripts that composer wants to run,
@@ -63,13 +63,12 @@ FROM php:8.2-alpine as cli
 
 WORKDIR /var/www/html
 
-# Install required extensions required by to run commands successfully.
-COPY ./docker/scripts ./docker/scripts
-
-RUN chmod +x ./docker/scripts/install_php_extensions.sh && ./docker/scripts/install_php_extensions.sh
-
 # Copy in our code base from our initial build which we installed in the previous stage
 COPY --from=composer_base /var/www/html /var/www/html
+
+# Install required extensions required by to run commands successfully.
+RUN chmod +x ./scripts/install_php_extensions.sh && ./scripts/install_php_extensions.sh
+
 # Copy composer binary so that composer can be run.
 COPY --from=composer_base /usr/bin/composer /usr/bin/composer
 COPY --from=frontend /var/www/html/public /var/www/html/public
@@ -85,10 +84,6 @@ COPY ./docker/php/php.ini /usr/local/etc/php/php.ini
 
 WORKDIR /var/www/html
 
-COPY ./docker/scripts ./docker/scripts
-
-RUN chmod +x ./docker/scripts/install_php_extensions.sh && ./docker/scripts/install_php_extensions.sh
-
 # As FPM uses the www-data user when running our application,
 # we need to make sure that we also use that user when starting up,
 # so our user "owns" the application when running
@@ -96,14 +91,18 @@ USER  www-data
 
 # We have to copy in our code base from our initial build which we installed in the previous stage.
 COPY --from=composer_base --chown=www-data /var/www/html /var/www/html
+
+# Install necessary scripts
+RUN chmod +x ./scripts/install_php_extensions.sh && ./scripts/install_php_extensions.sh
+
 COPY --from=frontend --chown=www-data /var/www/html/public /var/www/html/public
 
 RUN cp .env.prod .env
 
 # We want to cache the event, routes, and views so we don't try to write them when we are in Kubernetes.
-# Do not cache config here, as config gets changed per environment so we do that per environment level
-# as post deploy task.
+# Docker builds should be as immutable as possible.
 RUN php artisan event:cache && \
+    php artisan config:cache && \
     php artisan view:cache && \
     php artisan route:cache && \
     php artisan storage:link
