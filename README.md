@@ -31,3 +31,7 @@ or running. simply remove it from the yaml file and run below. (Will work since 
 
 -   Add Cypress tests
 -   Run parallel test on CI
+
+## K8s deployment manifest
+
+K8s deployment manifest using minikube is available on `https://github.com/yallungrai277/laravel-k8s-deployment`
