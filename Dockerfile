@@ -101,9 +101,9 @@ COPY --from=frontend --chown=www-data /var/www/html/public /var/www/html/public
 RUN cp .env.prod .env
 
 # We want to cache the event, routes, and views so we don't try to write them when we are in Kubernetes.
-# Docker builds should be as immutable as possible. Can be done after a post deploy script ?
+# Do not cache config here, as config gets changed per environment so we do that per environment level
+# as post deploy task.
 RUN php artisan event:cache && \
-    php artisan config:cache && \
     php artisan view:cache && \
     php artisan route:cache && \
     php artisan storage:link
