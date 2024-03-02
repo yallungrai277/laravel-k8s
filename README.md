@@ -29,6 +29,5 @@ or running. simply remove it from the yaml file and run below. (Will work since 
 
 ## Todo
 
--   Cypress and pipelines optimization
--   Improve final docker build
+-   Add Cypress tests
 -   Run parallel test on CI

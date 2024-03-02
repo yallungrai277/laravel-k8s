@@ -12,7 +12,7 @@ jobs:
       mysql:
         image: mariadb:10.11.4
         ports:
-          - 3306:3306
+        - 3306:3306
         env:
           MYSQL_DATABASE: 'laravel-k8s_test'
           MYSQL_ROOT_PASSWORD: 'root_in'
@@ -21,7 +21,7 @@ jobs:
       redis:
         image: redis:6.0.20-alpine
         ports:
-          - 6379:6379
+        - 6379:6379
 
     steps:
     - name: Checkout code
