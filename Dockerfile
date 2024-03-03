@@ -39,8 +39,6 @@ RUN mkdir -p boostrap/cache storage/app storage/framework/cache storage/framewor
 
 RUN chmod -R 777 boostrap storage
 
-RUN composer dump-autoload
-
 ########################################################################################################
 ############################################### Frontend ###############################################
 ########################################################################################################
@@ -54,7 +52,7 @@ WORKDIR /var/www/html
 RUN npm install && \
     npm run build
 
-# Remove hot from the container in case if added, otherise vite will maker requests to assets as a dev server.
+# Remove hot from the container in case if added, otherwise vite will maker requests to assets as a dev server.
 RUN rm -rf public/hot
 
 ########################################################################################################
@@ -86,16 +84,15 @@ COPY ./docker/php/php.ini /usr/local/etc/php/php.ini
 
 WORKDIR /var/www/html
 
-# As FPM uses the www-data user when running our application,
-# we need to make sure that we also use that user when starting up,
-# so our user "owns" the application when running
-USER  www-data
-
 # We have to copy in our code base from our initial build which we installed in the previous stage.
 COPY --from=composer_base --chown=www-data /var/www/html /var/www/html
 
-# Install necessary scripts
+# We need root user in order to install php extensions.
+USER root
 RUN chmod +x ./scripts/install_php_extensions.sh && ./scripts/install_php_extensions.sh
+
+# Change back to normal user.
+USER  www-data
 
 COPY --from=frontend --chown=www-data /var/www/html/public /var/www/html/public
 
@@ -141,4 +138,4 @@ ENTRYPOINT [ "crond" ]
 CMD ["-l", "2", "-f"]
 
 # Default stage.
-FROM cli
+FROM composer_base

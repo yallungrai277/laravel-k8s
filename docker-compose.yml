@@ -1,6 +1,5 @@
 version: "3"
 services:
-    # Cli not needed really, but it has composer binary over on to run composer commands.
     cli:
         build:
             context: .
