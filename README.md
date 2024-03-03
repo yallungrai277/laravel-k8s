@@ -21,6 +21,10 @@ or running. simply remove it from the yaml file and run below. (Will work since 
 -   You can now access your app under `localhost`.
 -   Under your `/etc/hosts` file add in an entry for `127.0.0.1 laravel-k8s.test`. This step is optional and after this now your site is locally available on `laravel-k8s.test`.
 
+### Horizon
+
+To process queue worker horizon is used. To run horizon please run `docker exec [cli_container_name] php artisan horizon`
+
 ### CS-Fixer
 
 -   docker exec [cli_container_name] ./vendor/bin/pint
