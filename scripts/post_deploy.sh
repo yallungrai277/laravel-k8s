@@ -20,4 +20,5 @@ php artisan view:cache
 php artisan route:cache
 php artisan migrate --force
 
-RUN composer dump-autoload
+composer dump-autoload
+## End of script.
