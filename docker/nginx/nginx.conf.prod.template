@@ -3,7 +3,6 @@ server {
     listen 80;
     listen [::]:80;
     root /var/www/html/public;
-    server_name laravel-k8s.test;
 
     client_max_body_size 100M;
 
