@@ -12,9 +12,12 @@ chmod -R 777 /var/www/html/storage
 
 cd /var/www/html
 
-# Since the image has cache of configurations, we clear out the config cache specifically as values defer depending on the environment.
+php artisan cache:clear
 php artisan config:clear
 php artisan config:cache
+php artisan event:cache
+php artisan view:cache
+php artisan route:cache
 php artisan migrate --force
 
-composer dump-autoload
+RUN composer dump-autoload
