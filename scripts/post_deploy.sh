@@ -6,9 +6,9 @@
 # already present there where the pv path is mounted. So we create required directories that are removed and set permissions in. For this specific container image
 # context these were missing. Please check for other images.
 # deployments.
-cd /var/www/html/storage/framework
-mkdir -p session views cache
-chmod -R 777 /var/www/html/storage
+mkdir -p boostrap/cache storage/app storage/framework/cache storage/framework/sessions storage/framework/testing storage/framework/views storage/logs
+cd /var/www/html/storage
+chmod -R 777 app framework logs
 
 cd /var/www/html
 
