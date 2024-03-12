@@ -11,6 +11,9 @@ mkdir -p storage/app storage/framework/cache storage/framework/sessions storage/
 cd ./storage
 chmod -R 777 app framework logs
 
+chown -R www-data:www-data /var/www/html/storage
+chmod -R 777 /var/www/html/storage
+
 cd /var/www/html
 
 php artisan cache:clear
