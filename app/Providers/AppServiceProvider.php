@@ -23,7 +23,8 @@ class AppServiceProvider extends ServiceProvider
         // So, if our app is served via a loadbalancer such as nginx-ingress with https enabled on
         // ingress itself, we also need a way to serve our assets as https, because technically our nginx web server
         // is not running https, it is just forwarding the request from loadbalancer to our app, ending https the moment
-        // our request actually is recevied by nginx.
+        // our request actually is recevied by nginx. Another way to fix this is to add
+        // the load balancer ip to the App\Http\Middleware\TrustProxies middleware.
         if ($this->app->environment('production')) {
             URL::forceScheme('https');
         }
