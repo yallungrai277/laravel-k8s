@@ -109,7 +109,7 @@ FROM nginx:1.20-alpine as web
 WORKDIR /var/www/html
 
 # Add nano and sudo
-RUN apk add nano doas-sudo-shim
+RUN apk add nano
 
 COPY docker/nginx/nginx.conf.prod.template /etc/nginx/templates/default.conf.template
 
