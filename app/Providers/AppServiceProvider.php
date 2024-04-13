@@ -26,10 +26,11 @@ class AppServiceProvider extends ServiceProvider
         // is not running https, it is just forwarding the request from loadbalancer to our app, ending https the moment
         // our request actually is recevied by nginx. Another way to fix this is to add
         // the load balancer ip to the App\Http\Middleware\TrustProxies middleware.
-        // @see https://laravel.com/docs/10.x/requests#configuring-trusted-proxies
+        // @see https://laravel.com/docs/10.x/requests#configuring-trusted-proxies.
         // Adding ip to trused proxies is recommended way but we do it here.
         // if ($this->app->environment('production')) {
         //     URL::forceScheme('https');
         // }
+
     }
 }
