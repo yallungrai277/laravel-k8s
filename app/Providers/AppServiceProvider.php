@@ -28,8 +28,8 @@ class AppServiceProvider extends ServiceProvider
         // the load balancer ip to the App\Http\Middleware\TrustProxies middleware.
         // @see https://laravel.com/docs/10.x/requests#configuring-trusted-proxies
         // Adding ip to trused proxies is recommended way but we do it here.
-        if ($this->app->environment('production')) {
-            URL::forceScheme('https');
-        }
+        // if ($this->app->environment('production')) {
+        //     URL::forceScheme('https');
+        // }
     }
 }
