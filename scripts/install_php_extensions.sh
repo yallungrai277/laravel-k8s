@@ -10,6 +10,7 @@ PHP_PECL_EXTS="redis"
 
 # PHPIZE_DEPS -> Automatically injected by the image.
 install_php_extensions() {
+    # Add nano and sudo
     apk add nano doas-sudo-shim
     apk add --virtual build-dependencies --no-cache ${PHPIZE_DEPS} openssl ca-certificates libxml2-dev oniguruma-dev && \
     docker-php-ext-install -j$(nproc) $PHP_EXTS && \
