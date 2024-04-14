@@ -39,6 +39,12 @@ RUN mkdir -p boostrap/cache storage/app storage/framework/cache storage/framewor
 
 RUN chmod -R 777 boostrap storage
 
+# Copy env files as well so that other service do not have to copy again.
+RUN cp .env.prod .env
+
+# Create storage link as well so ther service do not have to run it again.
+RUN php artisan storage:link
+
 ########################################################################################################
 ############################################### Frontend ###############################################
 ########################################################################################################
@@ -95,10 +101,6 @@ RUN chmod +x ./scripts/install_php_extensions.sh && ./scripts/install_php_extens
 USER  www-data
 
 COPY --from=frontend --chown=www-data /var/www/html/public /var/www/html/public
-
-RUN cp .env.prod .env
-
-RUN php artisan storage:link
 
 ########################################################################################################
 ################################################# NGINX ################################################
